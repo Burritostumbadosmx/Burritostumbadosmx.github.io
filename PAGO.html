@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            background-image: url('pago.jpg'); 
+            background-size: cover;
+            background-position: center; 
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #4CAF50; 
+            color: #fff; 
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); 
+            padding: 30px;
+            width: 350px;
+            border: 3px solid #2E8B57; 
+        }
+        h2 {
+            text-align: center;
+            color: #fff; 
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            font-size: 16px;
+            color: #ddd; 
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #3E8E41; 
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2C6F2C; 
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            text-align: center;
+            color: #4CAF50; 
+        }
+        .payment-form {
+            display: none;
+        }
+        .warning {
+            color: #ff4d4d;
+            text-align: center;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Metodo De Pago</h2>
+    <div class="form-group">
+        <label for="paymentMethod">Selecciona tu método de pago:</label>
+        <select id="paymentMethod" onchange="mostrarFormulario()">
+            <option value="">Selecciona...</option>
+            <option value="tarjeta">Tarjeta de Crédito/Débito</option>
+            <option value="paypal">PayPal</option>
+            <option value="bitcoin">Bitcoin</option>
+            <option value="efectivo">Pago en Efectivo</option>
+        </select>
+    </div>
+
+    <div id="tarjeta" class="payment-form">
+        <h3>Pago con Tarjeta</h3>
+        <div class="form-group">
+            <label for="cardNumber">Número de tarjeta:</label>
+            <input type="text" id="cardNumber" placeholder="1234 5678 9876 5432">
+        </div>
+        <div class="form-group">
+            <label for="expiryDate">Fecha de expiración:</label>
+            <input type="text" id="expiryDate" placeholder="MM/AA">
+        </div>
+        <div class="form-group">
+            <label for="cvv">CVV:</label>
+            <input type="text" id="cvv" placeholder="123">
+        </div>
+        <button onclick="procesarPago('tarjeta')">Realizar Pago</button>
+    </div>
+
+    <div id="paypal" class="payment-form">
+        <h3>Pago con PayPal</h3>
+        <div class="form-group">
+            <label for="paypalEmail">Correo de PayPal:</label>
+            <input type="email" id="paypalEmail" placeholder="usuario@paypal.com">
+        </div>
+        <button onclick="procesarPago('paypal')">Realizar Pago</button>
+    </div>
+
+    <div id="bitcoin" class="payment-form">
+        <h3>Pago con Bitcoin</h3>
+        <div class="form-group">
+            <label for="bitcoinAddress">Dirección de Bitcoin:</label>
+            <input type="text" id="bitcoinAddress" placeholder="1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa">
+        </div>
+        <button onclick="procesarPago('bitcoin')">Realizar Pago</button>
+    </div>
+
+    <div id="efectivo" class="payment-form">
+        <h3>Pago en Efectivo</h3>
+        <p>Por favor, paga al repartidor.</p>
+        <button onclick="procesarPago('efectivo')">Confirmar Pago</button>
+    </div>
+
+    <div id="result" class="result"></div>
+    <div id="warning" class="warning"></div> 
+</div>
+
+<script>
+    function mostrarFormulario() {
+        
+        document.querySelectorAll('.payment-form').forEach(form => form.style.display = 'none');
+        const metodoPago = document.getElementById("paymentMethod").value;
+        if (metodoPago) {
+            document.getElementById(metodoPago).style.display = 'block';
+        }
+    
+        document.getElementById("warning").innerHTML = "";
+    }
+
+    function procesarPago(metodo) {
+      
+        const resultDiv = document.getElementById("result");
+        const warningDiv = document.getElementById("warning");
+        warningDiv.innerHTML = "";
+        let mensaje = '';
+
+        let camposCompletos = true;
+
+      
+        switch (metodo) {
+            case 'tarjeta':
+                if (document.getElementById("cardNumber").value === '' ||
+                    document.getElementById("expiryDate").value === '' ||
+                    document.getElementById("cvv").value === '') {
+                    camposCompletos = false;
+                } else {
+                    mensaje = "Has elegido pagar con Tarjeta de Crédito/Débito. El pago será procesado de forma segura.";
+                }
+                break;
+            case 'paypal':
+                if (document.getElementById("paypalEmail").value === '') {
+                    camposCompletos = false;
+                } else {
+                    mensaje = "Has elegido pagar con PayPal. Serás redirigido a PayPal para completar el pago.";
+                }
+                break;
+            case 'bitcoin':
+                if (document.getElementById("bitcoinAddress").value === '') {
+                    camposCompletos = false;
+                } else {
+                    mensaje = "Has elegido pagar con Bitcoin. El pago será procesado a través de la red blockchain.";
+                }
+                break;
+            case 'efectivo':
+                mensaje = "Has elegido pagar en efectivo. Paga cuando se te entregue el pedido.";
+                break;
+            default:
+                mensaje = "Método de pago no válido.";
+        }
+
+      
+        if (!camposCompletos) {
+            warningDiv.innerHTML = "Por favor, completa todos los campos requeridos.";
+        } else {
+            resultDiv.innerHTML = mensaje;
+            setTimeout(() => {
+                window.location.href = "PAGO2.html"; 
+            }, 2000);
+        }
+    }
+</script>
+
+</body>
+</html>

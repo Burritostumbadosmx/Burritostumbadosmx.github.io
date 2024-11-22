@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Cuenta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url('sesion.jpg');
+            background-size: cover;
+            margin: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background-color: #000;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            color: #fff;
+        }
+
+        h2 {
+            text-align: center;
+            color: #f00;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #f00;
+            border-radius: 4px;
+            background-color: #222;
+            color: #fff;
+        }
+
+        .login-btn, .create-account-btn, .recover-btn, .guest-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #f00;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .login-btn:hover, .create-account-btn:hover, .recover-btn:hover {
+            background-color: #d50000;
+        }
+
+        .guest-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .guest-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .error-message, .recovery-message {
+            text-align: center;
+            display: none;
+        }
+
+        .error-message {
+            color: red;
+        }
+
+        .recovery-message {
+            color: green;
+        }
+
+        .existing-account, .existing-account a {
+            text-align: center;
+            display: block;
+            color: #f00;
+            text-decoration: none;
+        }
+
+        .existing-account a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="loginContainer">
+        <h2>Iniciar Sesión</h2>
+        <div class="error-message" id="loginErrorMessage">Correo o contraseña incorrectos.</div>
+        <form id="loginForm">
+            <input type="email" id="loginEmail" class="input-field" placeholder="Correo electrónico" required>
+            <input type="password" id="loginPassword" class="input-field" placeholder="Contraseña" required>
+            <button type="submit" class="login-btn" id="loginBtnSubmit">Iniciar Sesión</button>
+        </form>
+        <div class="existing-account">
+            <p>¿No tienes cuenta? <a href="javascript:void(0);" onclick="showCreateAccount()">Crea una cuenta</a></p>
+            <p><a href="javascript:void(0);" onclick="showPasswordRecovery()">¿Olvidaste tu contraseña?</a></p>
+        </div>
+    </div>
+
+    <div class="container" id="createAccountContainer" style="display:none;">
+        <h2>Crear Cuenta</h2>
+        <div class="error-message" id="createErrorMessage">Hubo un problema al crear la cuenta.</div>
+        <form id="createAccountForm">
+            <input type="text" id="newUsername" class="input-field" placeholder="Nombre de usuario" required>
+            <input type="email" id="newEmail" class="input-field" placeholder="Correo electrónico" required>
+            <input type="password" id="newPassword" class="input-field" placeholder="Crear contraseña" required>
+            <button type="submit" class="create-account-btn">Crear Cuenta</button>
+        </form>
+        <button class="guest-btn" onclick="entrarComoInvitado()">Entrar como Invitado</button>
+        <div class="existing-account">
+            <p>¿Ya tienes cuenta? <a href="javascript:void(0);" onclick="showLogin()">Inicia sesión</a></p>
+        </div>
+    </div>
+
+    <div class="container" id="passwordRecoveryContainer" style="display:none;">
+        <h2>Recuperar Contraseña</h2>
+        <div class="recovery-message" id="recoveryMessage">Te hemos enviado un enlace para recuperar tu contraseña.</div>
+        <div class="error-message" id="recoveryErrorMessage">No se encontró un usuario con ese correo electrónico.</div>
+        <form id="passwordRecoveryForm">
+            <input type="email" id="recoveryEmail" class="input-field" placeholder="Correo electrónico" required>
+            <button type="submit" class="recover-btn">Recuperar Contraseña</button>
+        </form>
+        <div class="existing-account">
+            <p><a href="javascript:void(0);" onclick="showLogin()">Volver a Iniciar sesión</a></p>
+        </div>
+    </div>
+
+    <script>
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+
+        function showCreateAccount() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('createAccountContainer').style.display = 'block';
+            document.getElementById('passwordRecoveryContainer').style.display = 'none';
+        }
+
+        function showLogin() {
+            document.getElementById('createAccountContainer').style.display = 'none';
+            document.getElementById('passwordRecoveryContainer').style.display = 'none';
+            document.getElementById('loginContainer').style.display = 'block';
+        }
+
+        function showPasswordRecovery() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('passwordRecoveryContainer').style.display = 'block';
+            document.getElementById('createAccountContainer').style.display = 'none';
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const userFound = users.find(user => user.email === email && user.password === password);
+            if (userFound) {
+                localStorage.setItem('user', JSON.stringify(userFound));
+                window.location.href = "menu.html";  // Redirige a menu.html
+            } else {
+                document.getElementById('loginErrorMessage').style.display = 'block';
+            }
+        });
+
+        document.getElementById('createAccountForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const newUsername = document.getElementById('newUsername').value;
+            const newEmail = document.getElementById('newEmail').value;
+            const newPassword = document.getElementById('newPassword').value;
+            if (newEmail && newPassword && newUsername) {
+                const newUser = { username: newUsername, email: newEmail, password: newPassword };
+                users.push(newUser);
+                localStorage.setItem('users', JSON.stringify(users));
+                localStorage.setItem('user', JSON.stringify(newUser));
+                window.location.href = "menu.html";  // Redirige a menu.html
+            } else {
+                document.getElementById('createErrorMessage').style.display = 'block';
+            }
+        });
+
+        function entrarComoInvitado() {
+            localStorage.setItem('user', JSON.stringify({ username: 'Invitado', email: 'Invitado', password: '' }));
+            window.location.href = "menu.html";  // Redirige a menu.html
+        }
+
+        document.getElementById('passwordRecoveryForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const recoveryEmail = document.getElementById('recoveryEmail').value;
+            const userFound = users.find(user => user.email === recoveryEmail);
+            if (userFound) {
+                document.getElementById('recoveryMessage').style.display = 'block';
+                document.getElementById('recoveryErrorMessage').style.display = 'none';
+            } else {
+                document.getElementById('recoveryErrorMessage').style.display = 'block';
+                document.getElementById('recoveryMessage').style.display = 'none';
+            }
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil del Usuario</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('cuenta.gif');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+            height: 100vh; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .profile-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; 
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.5); 
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            width: 80%;
+            max-width: 600px;
+            height: 300px; 
+            color: white;
+            text-align: center;
+        }
+
+        .header {
+            background-color: rgba(0, 0, 0, 0.7); 
+            color: white;
+            padding: 20px 0;
+            width: 100%;
+            text-align: center;
+            font-size: 1.5em;
+        }
+
+        .profile-container h2 {
+            font-size: 2em;
+            color: #ff4d4d; 
+            margin-bottom: 20px; 
+        }
+
+        .profile-container p {
+            font-size: 1.2em;
+            color: #fff;
+            margin-bottom: 30px; 
+        }
+
+        .btn-back {
+            background-color: #ff4d4d;
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+            text-decoration: none;
+            font-size: 1em;
+            display: inline-block;
+        }
+
+        .btn-back:hover {
+            background-color: #e04d4d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="profile-container" id="profileContent">
+        <div class="header">Mi Perfil</div>
+
+        
+        <div id="message"></div>
+
+        <a href="menu.html" class="btn-back">Volver al Menú</a>
+    </div>
+
+    <script>
+        
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        const messageElement = document.getElementById('message');
+
+        if (user) {
+           
+            messageElement.innerHTML = `
+                <h2>Bienvenido, ${user.username}</h2>
+                <p>Tu cuenta ha sido creada con éxito.</p>
+            `;
+        } else {
+          
+            messageElement.innerHTML = `
+                <h2>No se ha encontrado información de usuario.</h2>
+                <p>Por favor, crea una cuenta primero.</p>
+            `;
+        }
+    </script>
+
+</body>
+</html>

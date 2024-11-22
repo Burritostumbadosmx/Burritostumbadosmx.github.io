@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Burritos Tumbados</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            background-image: url('menu.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #b30000;
+            color: white;
+            padding: 10px 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .search-bar {
+            flex: 1;
+            margin: 0 20px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .cart, .profile {
+            font-size: 18px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .cart:hover, .profile:hover {
+            text-decoration: underline;
+        }
+
+        .profile {
+            font-size: 20px;
+        }
+
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px;
+        }
+
+        .product-item {
+            background-color: #222;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            text-align: center;
+            width: 250px;
+            color: white;
+        }
+
+        .product-item img {
+            max-width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .product-item h3 {
+            font-size: 1.5em;
+            margin: 10px 0;
+        }
+
+        .product-item p {
+            font-size: 1.2em;
+            color: #ccc;
+        }
+
+        .btn-add {
+            background-color: #b30000;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-add:hover {
+            background-color: #990000;
+        }
+
+        .footer {
+            background-color: #222;
+            padding: 10px;
+            text-align: center;
+            font-size: 12px;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo">Burritos Tumbados</div>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Buscar Burritos..." onkeyup="filtrarProductos()">
+        </div>
+        <div class="cart" onclick="verCarrito()">🛒 Carrito (<span id="cart-count">0</span>)</div>
+        <div class="profile" onclick="verPerfil()">👤</div>
+    </div>
+
+    <div class="products" id="productosContainer">
+        <div class="product-item" data-name="Burrito Pollo">
+            <img src="pollo.jpg" alt="Burrito Pollo">
+            <h3>Burrito Pollo</h3>
+            <p>$30.00</p>
+            <button class="btn-add" onclick="agregarAlCarrito('Burrito Pollo', 30, 'pollo.jpg')">Agregar al carrito</button>
+        </div>
+        <div class="product-item" data-name="Burrito Carne">
+            <img src="carne.jpg" alt="Burrito Carne">
+            <h3>Burrito Carne</h3>
+            <p>$25.00</p>
+            <button class="btn-add" onclick="agregarAlCarrito('Burrito Carne', 25, 'carne.jpg')">Agregar al carrito</button>
+        </div>
+        <div class="product-item" data-name="Burrito Mixto">
+            <img src="mixto.jpg" alt="Burrito Mixto">
+            <h3>Burrito Mixto</h3>
+            <p>$20.00</p>
+            <button class="btn-add" onclick="agregarAlCarrito('Burrito Mixto', 20, 'mixto.jpg')">Agregar al carrito</button>
+        </div>
+        <div class="product-item" data-name="Burrito Vegetariano">
+            <img src="vegetariano.jpg" alt="Burrito Vegetariano">
+            <h3>Burrito Vegetariano</h3>
+            <p>$25.00</p>
+            <button class="btn-add" onclick="agregarAlCarrito('Burrito Vegetariano', 25, 'vegetariano.jpg')">Agregar al carrito</button>
+        </div>
+        <div class="product-item" data-name="Burrito Chorizo">
+            <img src="bchorizo.jpg" alt="Burrito Chorizo">
+            <h3>Burrito Chorizo</h3>
+            <p>$20.00</p>
+            <button class="btn-add" onclick="agregarAlCarrito('Burrito Chorizo', 20, 'bchorizo.jpg')">Agregar al carrito</button>
+        </div>
+    </div>
+
+    <div class="footer">
+       © 2024 Burritos Tumbados. Todos los derechos reservados.
+    </div>
+
+    <script>
+        let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
+        function actualizarContadorCarrito() {
+            const cartCount = carrito.reduce((acc, item) => acc + item.cantidad, 0);
+            document.getElementById('cart-count').textContent = cartCount;
+        }
+
+        function agregarAlCarrito(producto, precio, imagen) {
+            const index = carrito.findIndex(item => item.producto === producto);
+            if (index !== -1) {
+                carrito[index].cantidad += 1;
+            } else {
+                carrito.push({ producto, precio, cantidad: 1, imagen });
+            }
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            actualizarContadorCarrito();
+            alert(`${producto} agregado al carrito`);
+        }
+
+        function verCarrito() {
+            window.location.href = 'carrito.html';
+        }
+
+        function verPerfil() {
+            window.location.href = 'cuenta.html';
+        }
+
+        function filtrarProductos() {
+            const searchValue = document.getElementById('searchInput').value.toLowerCase();
+            const productos = document.querySelectorAll('.product-item');
+            productos.forEach(producto => {
+                const nombreProducto = producto.getAttribute('data-name').toLowerCase();
+                if (nombreProducto.includes(searchValue)) {
+                    producto.style.display = 'block';
+                } else {
+                    producto.style.display = 'none';
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', actualizarContadorCarrito);
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burritos Tumbados - Recibo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('recibo.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: linear-gradient(to bottom right, #0056a8, #b30000);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header {
+            background-color: #003f73;
+            color: white;
+            padding: 10px;
+            border-radius: 10px 10px 0 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .order-info {
+            margin: 20px 0;
+        }
+
+        .products {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .product {
+            text-align: center;
+        }
+
+        .product img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .total {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .btn-close {
+            background-color: #b30000;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-close:hover {
+            background-color: #990000;
+        }
+
+        .comment {
+            font-size: 14px;
+            color: #f0f0f0;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .photo-comment {
+            font-size: 16px;
+            color: yellow;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">Recibo de Compra</div>
+
+        <div class="order-info">
+            <p>Gracias por tu compra, ¡esperamos que disfrutes tus Burritos Tumbados!</p>
+            <p>Cliente: <span id="cliente-name">Nombre del Cliente</span></p>
+            <p>Fecha de Compra: <span id="fecha-compra">Fecha</span></p>
+            <p>Número de Recibo: <span id="numero-recibo">#12345</span></p> <!-- Número de recibo -->
+        </div>
+
+        <div class="products" id="product-list"></div>
+
+        <div class="total">Total: $<span id="total-price">0.00</span></div>
+
+        <button class="btn-close" onclick="cerrarCompra()">Volver al Menú</button>
+
+        <div class="comment">© 2024 Burritos Tumbados. Todos los derechos reservados.</div>
+        
+        <div class="photo-comment">¡Recuerda tomar una foto o captura del recibo y mostrarla al repartidor!</div>
+    </div>
+
+    <script>
+        // Obtener carrito, usuario y fecha desde el localStorage
+        const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+        const usuario = JSON.parse(localStorage.getItem('user')) || { username: 'Invitado' };
+        const fechaCompra = new Date().toLocaleDateString();
+        const numeroRecibo = Math.floor(Math.random() * 100000);  // Número de recibo aleatorio
+
+        function renderizarRecibo() {
+            const productList = document.getElementById('product-list');
+            let total = 0;
+
+            // Mostrar nombre del cliente, fecha de compra y número de recibo
+            document.getElementById('cliente-name').textContent = usuario.username;
+            document.getElementById('fecha-compra').textContent = fechaCompra;
+            document.getElementById('numero-recibo').textContent = `#${numeroRecibo}`;
+
+            carrito.forEach(item => {
+                const productElement = document.createElement('div');
+                productElement.classList.add('product');
+                productElement.innerHTML = `
+                    <img src="${item.imagen}" alt="${item.producto}">
+                    <p>${item.producto}</p>
+                    <p>Cantidad: ${item.cantidad}</p>
+                    <p>Precio: $${item.precio.toFixed(2)}</p>
+                `;
+                productList.appendChild(productElement);
+                total += item.precio * item.cantidad;
+            });
+
+            document.getElementById('total-price').textContent = total.toFixed(2);
+        }
+
+        function cerrarCompra() {
+            // Vaciar el carrito en localStorage
+            localStorage.removeItem('carrito');
+            window.location.href = 'menu.html'; // Redirige al menú
+        }
+
+        document.addEventListener('DOMContentLoaded', renderizarRecibo);
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Burritos Tumbados</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            background-image: url('menu.jpg'); 
+            background-size: cover;
+            background-position: center;
+        }
+
+        .header {
+            background-color: #8B0000; 
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header .logo {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .header .cart {
+            font-size: 18px;
+        }
+
+        .main-content {
+            padding: 20px;
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: rgba(0, 0, 0, 0.7); 
+        }
+
+        .cart-table th, .cart-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .cart-table th {
+            background-color: #8B0000;
+            color: white;
+        }
+
+        .cart-table td {
+            color: #fff;
+        }
+
+        .cart-table .total {
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .buttons {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn-green {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-green:hover {
+            background-color: #218838;
+        }
+
+        .btn-yellow {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .btn-yellow:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-red {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-red:hover {
+            background-color: #c82333;
+        }
+
+        .footer {
+            background-color: #8B0000;
+            padding: 10px;
+            text-align: center;
+            font-size: 12px;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">Burritos Tumbados</div>
+        <div class="cart">🛒 Carrito (<span id="cart-count">0</span>)</div>
+    </div>
+
+    <div class="main-content">
+        <h2>Tu carrito</h2>
+        <table class="cart-table" id="cart-table">
+            <thead>
+                <tr>
+                    <th>Imagen</th>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Total</th>
+                    <th>Eliminar</th>
+                </tr>
+            </thead>
+            <tbody id="cart-items">
+            </tbody>
+        </table>
+
+        <div class="buttons">
+            <a href="menu.html" class="btn btn-green">Volver al Menú</a>
+            <button class="btn btn-red" onclick="vaciarCarrito()">Vaciar Carrito</button>
+            <a id="btn-pago" href="PAGO.html" class="btn btn-yellow" onclick="verificarCarrito(event)">Ir a Pago</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        © 2024 Burritos Tumbados. Todos los derechos reservados.
+    </div>
+
+    <script>
+        const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
+        function actualizarContadorCarrito() {
+            const cartCount = carrito.reduce((acc, item) => acc + item.cantidad, 0);
+            document.getElementById('cart-count').textContent = cartCount;
+        }
+
+        function renderizarCarrito() {
+            const cartItems = document.getElementById('cart-items');
+            cartItems.innerHTML = '';
+
+            if (carrito.length === 0) {
+                cartItems.innerHTML = '<tr><td colspan="6">Tu carrito está vacío.</td></tr>';
+                document.getElementById('btn-pago').href = '#';
+                document.getElementById('btn-pago').onclick = function(event) {
+                    event.preventDefault();
+                    alert("No puedes proceder al pago sin productos en el carrito.");
+                };
+            } else {
+                carrito.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><img src="${item.imagen}" alt="${item.producto}" style="width: 50px; height: 50px; object-fit: cover;"></td>
+                        <td>${item.producto}</td>
+                        <td>$${item.precio.toFixed(2)}</td>
+                        <td>${item.cantidad}</td>
+                        <td>$${(item.precio * item.cantidad).toFixed(2)}</td>
+                        <td><button class="btn btn-red" onclick="eliminarDelCarrito(${index})">Eliminar</button></td>
+                    `;
+                    cartItems.appendChild(row);
+                });
+
+                const totalRow = document.createElement('tr');
+                totalRow.innerHTML = `
+                    <td colspan="4" class="total">Total:</td>
+                    <td class="total">$${carrito.reduce((acc, item) => acc + item.precio * item.cantidad, 0).toFixed(2)}</td>
+                    <td></td>
+                `;
+                cartItems.appendChild(totalRow);
+            }
+        }
+
+        function eliminarDelCarrito(index) {
+            carrito.splice(index, 1);
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            renderizarCarrito();
+            actualizarContadorCarrito();
+        }
+
+        function vaciarCarrito() {
+            localStorage.removeItem('carrito');
+            carrito.length = 0;  
+            renderizarCarrito();
+            actualizarContadorCarrito();
+        }
+
+        function verificarCarrito(event) {
+            if (carrito.length === 0) {
+                alert("Tu carrito está vacío. No puedes proceder al pago.");
+                event.preventDefault();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderizarCarrito();
+            actualizarContadorCarrito();
+        });
+    </script>
+</body>
+</html>
